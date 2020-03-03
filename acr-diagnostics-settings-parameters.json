@@ -1,0 +1,14 @@
+{
+    "diagnosticsSettingName": {
+        "type": "string",
+        "metadata": {
+            "description": "Name for the diagnostic setting resource (e.g. 'SendToWorkspace')"
+        }
+    },
+    "workspaceId": {
+        "type": "string",
+        "metadata": {
+            "description": "Resource ID of Log Analytics workspace"
+        }
+    }
+}

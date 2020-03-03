@@ -1,0 +1,107 @@
+{
+  "properties": {
+    "mode": "indexed",
+    "displayName": "Deploy diagnostic setting for container registry to stream to log analytics workspace",
+    "description": "Automatically configure a diagnostic setting for container registry resources which will stream to a specified log analytics workspace.",
+    "parameters": {
+      "diagnosticsSettingName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name for the diagnostic setting resource (e.g. 'SendToWorkspace')"
+        }
+      },
+      "workspaceId": {
+        "type": "string",
+        "metadata": {
+          "description": "Resource ID of Log Analytics workspace"
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "field": "type",
+        "equals": "Microsoft.ContainerRegistry/registries"
+      },
+      "then": {
+        "effect": "DeployIfNotExists",
+        "details": {
+          "type": "Microsoft.Insights/diagnosticSettings",
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+          ],
+          "existenceCondition": {
+            "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
+            "equals": "[parameters('workspaceId')]"
+          },
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "template": {
+                "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "diagnosticsSettingName": {
+                    "type": "string"
+                  },
+                  "workspaceId": {
+                    "type": "string"
+                  },
+                  "registryName": {
+                    "type": "string"
+                  }
+                },
+                "variables": {},
+                "functions": [],
+                "resources": [{
+                  "type": "Microsoft.ContainerRegistry/registries/providers/diagnosticSettings",
+                  "name": "[concat(parameters('registryName'),'/Microsoft.Insights/', parameters('diagnosticsSettingName'))]",
+                  "apiVersion": "2017-05-01-preview",
+                  "properties": {
+                    "workspaceId": "[parameters('workspaceId')]",
+                    "logs": [{
+                        "category": "ContainerRegistryRepositoryEvents",
+                        "enabled": true,
+                        "retentionPolicy": {
+                          "enabled": false,
+                          "days": 0
+                        }
+                      },
+                      {
+                        "category": "ContainerRegistryLoginEvents",
+                        "enabled": true,
+                        "retentionPolicy": {
+                          "enabled": false,
+                          "days": 0
+                        }
+                      }
+                    ],
+                    "metrics": [{
+                      "category": "AllMetrics",
+                      "enabled": true,
+                      "retentionPolicy": {
+                        "enabled": false,
+                        "days": 0
+                      }
+                    }]
+                  }
+                }],
+                "outputs": {}
+              },
+              "parameters": {
+                "diagnosticsSettingName": {
+                  "value": "[parameters('diagnosticsSettingName')]"
+                },
+                "workspaceId": {
+                  "value": "[parameters('workspaceId')]"
+                },
+                "registryName": {
+                  "value": "[field('name')]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
