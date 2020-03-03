@@ -82,3 +82,4 @@ az policy remediation create \
 ## Resources
 
 * https://docs.microsoft.com/en-us/azure/governance/policy/
+* https://docs.microsoft.com/en-us/azure/azure-monitor/platform/diagnostic-logs-schema
